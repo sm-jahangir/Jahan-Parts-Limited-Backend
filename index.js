@@ -18,6 +18,7 @@ async function run() {
   try {
     await client.connect();
     const productCollection = client.db("jahanParts").collection("products");
+    const orderCollection = client.db("jahanParts").collection("orders");
 
     // Get all services
     app.get("/services", async (request, response) => {
@@ -40,6 +41,13 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const product = await productCollection.findOne(query);
       response.send(product);
+    });
+
+    // Order Place
+    app.post("/order", async (req, res) => {
+      const newOrder = req.body;
+      const result = await orderCollection.insertOne(newOrder);
+      res.send(result);
     });
 
     console.log("DB connected");
