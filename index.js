@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const cors = require("cors");
 const port = process.env.PORT || 5000;
@@ -17,14 +17,29 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     await client.connect();
-    const collection = client.db("doctorsPortal").collection("services");
+    const productCollection = client.db("jahanParts").collection("products");
 
     // Get all services
     app.get("/services", async (request, response) => {
       const query = {};
-      const cursor = collection.find(query);
+      const cursor = productCollection.find(query);
       const services = await cursor.toArray();
       response.send(services);
+    });
+
+    // Get all Products
+    app.get("/products", async (request, response) => {
+      const query = {};
+      const cursor = productCollection.find(query);
+      const products = await cursor.toArray();
+      response.send(products);
+    });
+    // product Details
+    app.get("/product/:id", async (request, response) => {
+      const id = request.params.id;
+      const query = { _id: ObjectId(id) };
+      const product = await productCollection.findOne(query);
+      response.send(product);
     });
 
     console.log("DB connected");
@@ -34,9 +49,9 @@ async function run() {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-  res.send("Hello From Doctors Uncle!");
+  res.send("Hello From Jahan Parts Shop!");
 });
 
 app.listen(port, () => {
-  console.log(`Doctors app listening on port ${port}`);
+  console.log(`Jahan Parts app listening on port ${port}`);
 });
