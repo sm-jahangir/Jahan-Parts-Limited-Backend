@@ -26,9 +26,8 @@ function verifyJWT(req, res, next) {
     }
     console.log("decoded", decoded);
     req.decoded = decoded;
+    next();
   });
-
-  next();
 }
 async function run() {
   try {
@@ -76,7 +75,24 @@ async function run() {
       res.send(result);
     });
 
-    // Order Place
+    /**
+     * =======================================
+     *              Review API
+     * ======================================
+     * */
+    // http://localhost:5000/review?email=samraatjahangir@gmail.com
+    app.get("/review", verifyJWT, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const email = req.query.email;
+      if (email === decodedEmail) {
+        const query = { email: email };
+        const cursor = orderCollection.find(query);
+        const reviews = await cursor.toArray();
+        res.send(reviews);
+      } else {
+        res.status(403).send({ message: "forbidden access" });
+      }
+    });
     app.post("/review", async (req, res) => {
       const newOrder = req.body;
       const result = await reviewCollection.insertOne(newOrder);
