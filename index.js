@@ -35,6 +35,7 @@ async function run() {
     await client.connect();
     const productCollection = client.db("jahanParts").collection("products");
     const orderCollection = client.db("jahanParts").collection("orders");
+    const reviewCollection = client.db("jahanParts").collection("reviews");
 
     // AUTH
     app.post("/login", async (req, res) => {
@@ -72,6 +73,13 @@ async function run() {
     app.post("/order", async (req, res) => {
       const newOrder = req.body;
       const result = await orderCollection.insertOne(newOrder);
+      res.send(result);
+    });
+
+    // Order Place
+    app.post("/review", async (req, res) => {
+      const newOrder = req.body;
+      const result = await reviewCollection.insertOne(newOrder);
       res.send(result);
     });
 
