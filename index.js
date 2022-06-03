@@ -113,6 +113,25 @@ async function run() {
       const result = await orderCollection.insertOne(newOrder);
       res.send(result);
     });
+    // Order get
+    app.post("/order", async (req, res) => {
+      const newOrder = req.body;
+      const result = await orderCollection.insertOne(newOrder);
+      res.send(result);
+    });
+    // http://localhost:5000/order?email=samraatjahangir@gmail.com
+    app.get("/order", verifyJWT, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const email = req.query.email;
+      if (email === decodedEmail) {
+        const query = { email: email };
+        const cursor = orderCollection.find(query);
+        const orders = await cursor.toArray();
+        res.send(orders);
+      } else {
+        res.status(403).send({ message: "forbidden access" });
+      }
+    });
 
     /**
      * =======================================
