@@ -151,6 +151,14 @@ async function run() {
         res.status(403).send({ message: "forbidden access" });
       }
     });
+
+    // Get all Reviews
+    app.get("/all-review", async (request, response) => {
+      const query = {};
+      const cursor = reviewCollection.find(query);
+      const reviews = await cursor.toArray();
+      response.send(reviews);
+    });
     app.post("/review", async (req, res) => {
       const newOrder = req.body;
       const result = await reviewCollection.insertOne(newOrder);
